@@ -83,7 +83,7 @@ All notebooks are designed to run in **Google Colab**.
 1. Open the Day 1 notebook:
 
    ```
-   https://colab.research.google.com/github/yourname/workshop/blob/main/notebooks/intro.ipynb
+   https://colab.research.google.com/github/Cas-Dec/USLS-Workshop/blob/main/notebooks/intro.ipynb
    ```
 
 2. Run the first setup cell, which will:
