@@ -6,11 +6,11 @@ The workshop is designed for students with **little to no prior programming expe
 
 ---
 
-## 🌱 Workshop Philosophy
+## 🌍 Why This Workshop?
 
-Modern biology is increasingly a data-driven science.
+Modern biology is deeply connected to data science.
 
-From climate change and biodiversity loss to epidemiology and ecosystem monitoring, biological questions today are often answered through:
+Understanding environmental change, biodiversity loss, and ecological systems; from climate change and biodiversity loss to epidemiology and ecosystem monitoring, biological questions today are often answered through:
 
 * data collection
 * data analysis
@@ -21,7 +21,11 @@ This workshop focuses on the idea that:
 
 > Programming is not the goal — it is a tool for understanding biological systems.
 
-We emphasize intuition, interpretation, and visual storytelling over technical complexity.
+These skills are accessible to everyone. Using Python, we can:
+
+* analyze large datasets
+* discover new findings
+* communicate results effectively
 
 ---
 
@@ -42,24 +46,19 @@ By the end of this workshop, students will be able to:
 
 The workshop is divided into three progressive modules:
 
-### Day 1 — Introduction to Data & Climate Signals
+### Day 1 — Seeing the Climate Through Data
 
-* Basic Python data handling
-* Global temperature trends
-* Local climate comparison (Bacolod)
-* Introduction to “hockey stick” style visualizations
+* PART I: From raw numbers to global and local patterns and trends
+* PART II: Temperature on Earth is changing. What is driving these changes?
+* PART III: Climate in Negros and the Philippines
 
-### Day 2 — Patterns in Environmental Systems
+### Day 2 — ...
 
-* Seasonal cycles (rainfall, wind, monsoons)
-* Working with geospatial and time series data
-* Introduction to structured datasets (e.g. climate reanalysis products)
+* ...
 
-### Day 3 — From Data to Insight
+### Day 3 — ...
 
-* Combining multiple variables (temperature, rainfall, wind)
-* Simple modeling and interpretation
-* Identifying patterns, correlations, and limitations of data
+* ...
 
 ---
 
@@ -84,7 +83,7 @@ All notebooks are designed to run in **Google Colab**.
 1. Open the Day 1 notebook:
 
    ```
-   https://colab.research.google.com/github/yourname/workshop/blob/main/notebooks/day1.ipynb
+   https://colab.research.google.com/github/yourname/workshop/blob/main/notebooks/intro.ipynb
    ```
 
 2. Run the first setup cell, which will:
@@ -107,10 +106,10 @@ During the workshop, students will generate outputs such as:
 * plots and figures
 * intermediate results
 
-These are stored in Google Drive under:
+These are stored in your personal Google Drive under:
 
 ```
-MyDrive/biology-workshop/
+MyDrive/USLS-Workshop/
 ```
 
 This ensures that work persists across sessions and between workshop days.
@@ -132,34 +131,15 @@ Students are not expected to interact with this layer directly unless instructed
 
 ---
 
-## 🌍 Why This Workshop Exists
-
-Biology today is deeply connected to data science.
-
-Understanding environmental change, biodiversity loss, and ecological systems requires the ability to:
-
-* analyze large datasets
-* visualize trends clearly
-* communicate results effectively
-
-This workshop aims to lower the barrier to entry and show that these skills are accessible to everyone.
-
----
-
-## 📜 License
+## License
 
 This material is provided for educational use.
 You are free to reuse or adapt it for teaching purposes with attribution.
 
 ---
 
-## 👨‍🏫 Instructor Notes
+## Instructor Notes
 
-This workshop is intentionally designed to:
+This workshop is intentionally designed for accessible and easy handling for people with little to zero programming experience. Through relevant scientific and biological storylines, it aims to gently introduce the power of programming tools.
 
-* minimize setup friction
-* avoid installation issues
-* prioritize conceptual understanding over syntax memorization
-* gradually introduce computational thinking through biology-relevant examples
-
-Feedback and improvements are welcome.
+Feedback and improvements are welcome!
