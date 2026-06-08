@@ -5,6 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "workshop-utils"
 version = "0.1.0"
+dependencies = [
+    "pyprojroot",
+    "requests"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

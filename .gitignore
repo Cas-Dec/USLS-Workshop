@@ -8,8 +8,8 @@ __pycache__/
 # OS files
 .DS_Store
 
-# Large downloaded datasets
-data/raw/
+# data
+data/
 
 # Generated outputs
 figures/

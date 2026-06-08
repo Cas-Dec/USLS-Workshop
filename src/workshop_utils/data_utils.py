@@ -9,12 +9,14 @@ Data utilities.
 
 
 import os
-import ee
 import glob
 import requests
 import pandas as pd
 import xarray as xr
-import rioxarray
+from pathlib import Path
+from workshop_utils import DATA_DIR
+#import ee
+# #import rioxarray
 
 
 #================================
@@ -22,7 +24,6 @@ import rioxarray
 #================================
 
 
-_CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 _ARCO_DS = None
 _eBird_API_KEY = "1i5hmt4s8350"
 
@@ -30,6 +31,13 @@ _eBird_API_KEY = "1i5hmt4s8350"
 #================================
 # Data loading
 #================================
+
+
+def dir_exists(path):
+    if not os.path.exists(path):
+        print(f"[WARNING]: creating path {path}.")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    return
 
 
 def launch_ARCO_ERA5():
@@ -47,9 +55,9 @@ def launch_ARCO_ERA5():
 
 def download_var(var, timestamp):
     """Writes out ARCO-ERA5 variable at timestamp to netCDF file."""
-    _out_dir = os.path.join(_CURRENT_DIRECTORY, '..', 'data', 'ERA5', 't2m')
-    _out_file =  os.path.join(_out_dir, f'{var}_{timestamp.strftime("%Y-%m-%dT%H")}.nc')
-    os.makedirs(_out_dir, exist_ok=True)
+    _out_dir = DATA_DIR / 'raw' / 'ERA5' / var
+    _out_file = _out_dir / f'{var}_{timestamp.strftime("%Y-%m-%dT%H")}.nc'
+    dir_exists(_out_file)
 
     if not os.path.exists(_out_file):
         arco = launch_ARCO_ERA5()
@@ -59,16 +67,17 @@ def download_var(var, timestamp):
 
 
 def load_lsm():
-    lsm_path = os.path.join(_CURRENT_DIRECTORY, '..', 'data', 'ERA5', 'landseamask.nc')
+    lsm_path = DATA_DIR / 'raw' / 'ERA5' / 'land_sea_mask' / 'land_sea_mask_2024-01-01T00.nc'
     if not os.path.exists(lsm_path):
         print("[WARNING]: Downloading land-sea mask on the fly...")
-        download_var("lsm", '2024-01-01T00') # arbitrary timestamp
+        timestamp = pd.to_datetime('2024-01-01T00')
+        download_var("land_sea_mask", timestamp) # arbitrary timestamp
         
-    landseamask = xr.open_dataset(lsm_path)
+    landseamask = xr.open_dataset(lsm_path).land_sea_mask
     return landseamask
 
 
-def request_eBird():
+"""def request_eBird():
 
     region = "PH"
     species = "cangoo"
@@ -195,4 +204,4 @@ def tifs_to_netcdf(path_pattern, out_file):
         datasets.append(da)
 
     ds = xr.concat(datasets, dim="time")
-    ds.to_netcdf(out_file)
+    ds.to_netcdf(out_file)"""
