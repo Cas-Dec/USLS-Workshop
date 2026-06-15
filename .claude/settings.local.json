@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"^/.*\\\\.\\(csv|nc|txt|tif|tiff|png|jpg\\)$\")"
+    ]
+  }
+}
