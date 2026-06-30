@@ -17,5 +17,10 @@ dependencies:
   - h5netcdf
   - h5py
   - dask
+  - rasterio
+  - rioxarray
+  - pyproj
+  - scikit-learn
+  - pystac-client
   - pip:
     - pyprojroot

@@ -1,0 +1,34 @@
+#---------------------------------------
+DAY ONE: SEEING THE CLIMATE THROUGH DATA
+#---------------------------------------
+
+-> summary: a gentle introduction to climate data timeseries and visualization thereof. The students learn basic data exploration and plotting skills, and explore what could be driving temperature changes on Earth. The day ends with a close look at the climate in the Philippines.
+
+- INTRO: Introduction of myself, the workshop, and Python (minimal).
+- PART I: From raw numbers to global and local patterns and trends.
+- PART II: Temperature on Earth is changing. What is driving these changes?
+- PART III: Climate in Negros and the Philippines.
+
+
+#---------------------------------------
+DAY TWO: BIODIVERSITY, LAND USE, AND CHANGE DETECTION
+#---------------------------------------
+
+-> summary: the day starts out with an introduction to spatiotemporal data, further developing a basic Python skillset. We explore the fauna and flora of the Philippines, highlighting it's position in the world as a biodiversity hotspot. Now ready to tackle satellite imagery, students perform a land use classification, and finish the day with change detection.
+
+- PART I: Philippines climate zones, revisited.
+- PART II: The Philippines as a biodiversity hotspot.
+- PART III: From satellite imagery to land use
+- PART IV: Land use change detection
+
+
+#---------------------------------------
+DAY THREE: SPECIES DISTRIBUTION MODELING
+#---------------------------------------
+
+-> summary: we have records of where species have been observed, but those points are not yet an explanation. Where is the species found? Where is it absent, or simply not recorded? What environmental conditions might explain the pattern? Once we have an idea of what determines the presence, absence, or even abundance of a species, we can go beyond observation, and model the species’ distribution. With such models, we can predict where we have no data, identify key regions for conservation, and even model what could happen if the environment were to change.
+
+- PART I: From observations to ecological questions.
+- PART II: Identifying environmental predictors: climate, land use, and habitat suitability.
+- PART III: Species distribution modeling.
+- PART IV: How to be a good scientist: tips, tricks, and pitfalls.
