@@ -84,7 +84,53 @@ Core plotting mechanics — students got heavy repeated practice here across man
 ---
 
 ## Day 2 — `notebooks/day2.ipynb`
-*(not yet reviewed — populate after auditing day2.ipynb)*
+*(Parts I-II reviewed; Parts III-IV not yet built)*
+
+Theme: building a homemade Köppen-Geiger classifier from scratch (Part I), then the Philippines as a biodiversity hotspot — forest cover, satellite imagery, fauna (Part II).
+
+### Python basics (no library)
+- `def` functions with multiple parameters and a `return` statement (first real hands-on use; only mentioned conceptually in Day 1)
+- `for` loops over a list, incl. unpacking tuples (`for name, price in prices`)
+- **Nested `for` loops** over 2D grid indices (`for i in range(...): for j in range(...):`), incl. `continue` to skip an iteration
+- List/array slicing (`monthly_P[3:9]`) to pull out a sub-range (e.g. Apr-Sep from 12 months)
+- Dictionaries for lookup tables (`GROUP_TO_KG_CODE[climate_code]`)
+- `np.argmin(np.abs(array - value))` — finding the closest value's index in an array
+
+### numpy (`np`)
+- `np.full(shape, fill_value)` — pre-allocating an output array (e.g. NaN-filled grid before a loop fills it in)
+- `np.dstack([...])` — stacking 2D arrays into a 3D `(rows, cols, channels)` image array
+- `np.nan_to_num(...)` — replacing NaNs with a fixed value (e.g. before building an RGB image)
+- `.astype(np.uint8)` — casting array dtype
+- Boolean arrays + `.mean()` as a "fraction true" trick (`(array > threshold).mean()`), used for both raster stats and pandas null-rate checks
+
+### pandas (`pd`)
+- `.value_counts()` — frequency counts of a categorical column
+- `.isnull().sum()` / `.isnull().mean()` — data-quality / null-rate checks before filtering or plotting
+- `.str.contains(text, case=False, na=False)` — partial text matching for filtering (messy real-world category columns, e.g. `stateProvince` variants like "Negros Oriental"/"Negros I")
+- Boolean filtering via a named condition variable (`df[is_negros]`), building on Day 1's inline `df[condition]`
+- A pandas `Series.plot()`/`.value_counts()` combo feeding directly into a bar chart
+
+### matplotlib (`plt`)
+- `ax.imshow(rgb_array)` — displaying a `(rows, cols, 3)` array as a true-colour image (first non-data-map image display)
+- `ax.axis("off")` — hiding axes for photo-like images
+- Reused without new teaching: `pcolormesh` + discrete colormap/legend pattern (Köppen maps), `contour` (land-sea mask outlines), multi-panel subplots, scatter, bar charts
+
+### xarray (`xr`)
+- Genuinely 3D datasets (`time, lat, lon`) vs. Day 1's already-time-reduced 2D climatologies
+- `.coarsen(dim1=n, dim2=n, boundary="trim").mean()` — downsampling a high-resolution raster for faster plotting
+- `da.plot()` on a large raster with `cbar_kwargs` for colorbar label customization
+- `.sel(time="2024-04-03")` — label-based selection along a non-lat/lon dimension
+
+### Domain/conceptual content
+- Full Köppen-Geiger decision tree incl. rigorous aridity threshold (Peel, Finlayson & McMahon 2007 formula, using seasonal precipitation distribution) — not just the Day 1 simplified/placeholder version
+- Multispectral satellite imagery: bands vs. true colour, NDVI concept (red/nir), Sentinel-2 mission basics
+- Hansen Global Forest Change dataset (treecover2000)
+- GBIF occurrence data structure and quirks (sparse/clustered records, geocoding errors, missing values)
+- IUCN Red List categories (LC/NT/VU/EN/CR/DD)
+
+### workshop_utils / data
+- `land_sea_mask_0p1.nc` — a second land-sea mask (0.1°, matches the Beck climate grid), distinct from Day 1's ERA5-resolution `land_sea_mask.nc`
+- Data lives partly under `PROCESSED_DIR / "day_2"` (GBIF CSVs, Sentinel-2, Hansen forest change) vs. directly under `PROCESSED_DIR` (climate/KG files, reused from Day 1)
 
 ## Day 3 — `notebooks/day3.ipynb`
 *(not yet reviewed — populate after auditing day3.ipynb)*

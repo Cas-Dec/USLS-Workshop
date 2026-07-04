@@ -22,3 +22,6 @@ results/
 # IDEs
 .vscode/
 .idea/
+
+# Solved exercises
+*solutions.ipynb
