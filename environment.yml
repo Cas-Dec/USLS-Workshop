@@ -25,3 +25,4 @@ dependencies:
   - nbstripout
   - pip:
     - pyprojroot
+    - planetary-computer

@@ -83,10 +83,10 @@ Core plotting mechanics — students got heavy repeated practice here across man
 
 ---
 
-## Day 2 — `notebooks/day2.ipynb`
-*(Parts I-II reviewed; Parts III-IV not yet built)*
+## Day 2 — `notebooks/day2.ipynb` / `notebooks/day2_solutions.ipynb`
+*(all four parts implemented in day2_solutions.ipynb; day2.ipynb itself still only has Parts I-II)*
 
-Theme: building a homemade Köppen-Geiger classifier from scratch (Part I), then the Philippines as a biodiversity hotspot — forest cover, satellite imagery, fauna (Part II).
+Theme: building a homemade Köppen-Geiger classifier from scratch (Part I); the Philippines as a biodiversity hotspot — forest cover, satellite imagery, fauna (Part II); a second homemade classifier for land cover from Sentinel-2 (Part III); measuring real land-use change on Negros, cross-validated against Hansen et al. (Part IV).
 
 ### Python basics (no library)
 - `def` functions with multiple parameters and a `return` statement (first real hands-on use; only mentioned conceptually in Day 1)
@@ -95,13 +95,17 @@ Theme: building a homemade Köppen-Geiger classifier from scratch (Part I), then
 - List/array slicing (`monthly_P[3:9]`) to pull out a sub-range (e.g. Apr-Sep from 12 months)
 - Dictionaries for lookup tables (`GROUP_TO_KG_CODE[climate_code]`)
 - `np.argmin(np.abs(array - value))` — finding the closest value's index in an array
+- Optional/default function parameters (`def f(x, from_class=None, to_class=None)`), used to make one function (`detect_change`) serve multiple call patterns instead of writing near-duplicate functions
 
 ### numpy (`np`)
 - `np.full(shape, fill_value)` — pre-allocating an output array (e.g. NaN-filled grid before a loop fills it in)
 - `np.dstack([...])` — stacking 2D arrays into a 3D `(rows, cols, channels)` image array
 - `np.nan_to_num(...)` — replacing NaNs with a fixed value (e.g. before building an RGB image)
 - `.astype(np.uint8)` — casting array dtype
-- Boolean arrays + `.mean()` as a "fraction true" trick (`(array > threshold).mean()`), used for both raster stats and pandas null-rate checks
+- Boolean arrays + `.mean()` as a "fraction true" trick (`(array > threshold).mean()`), used for raster stats, pandas null-rate checks, and before/after land-cover fraction comparisons
+- `np.unique(array, return_counts=True)` — the numpy equivalent of pandas' `.value_counts()`, applied directly to a raw array (e.g. Hansen's `lossyear`)
+- Vectorizing an `if/elif` decision tree over a whole array/grid at once: build one boolean mask per condition and assign into a pre-allocated output array in *reverse priority order* (least-important condition first, so higher-priority conditions get assigned last and "win") — first done for climate classes (`classify_koppen_2D`), then reused verbatim in a new domain for land cover (`classify_landcover_2D`)
+- Fixed-width string arrays (`dtype="<U10"`) as a classification output, incl. element-wise `+` for string concatenation
 
 ### pandas (`pd`)
 - `.value_counts()` — frequency counts of a categorical column
@@ -113,23 +117,28 @@ Theme: building a homemade Köppen-Geiger classifier from scratch (Part I), then
 ### matplotlib (`plt`)
 - `ax.imshow(rgb_array)` — displaying a `(rows, cols, 3)` array as a true-colour image (first non-data-map image display)
 - `ax.axis("off")` — hiding axes for photo-like images
-- Reused without new teaching: `pcolormesh` + discrete colormap/legend pattern (Köppen maps), `contour` (land-sea mask outlines), multi-panel subplots, scatter, bar charts
+- Reused without new teaching: `pcolormesh` + discrete colormap/legend pattern (Köppen maps, then a second `LC_INFO` categorical scheme for land cover), `contour` (land-sea mask outlines), multi-panel subplots, scatter, bar charts, `ax.set_xlim`/`set_ylim` to zoom a map to a sub-region (e.g. just around Bacolod)
 
 ### xarray (`xr`)
 - Genuinely 3D datasets (`time, lat, lon`) vs. Day 1's already-time-reduced 2D climatologies
 - `.coarsen(dim1=n, dim2=n, boundary="trim").mean()` — downsampling a high-resolution raster for faster plotting
 - `da.plot()` on a large raster with `cbar_kwargs` for colorbar label customization
 - `.sel(time="2024-04-03")` — label-based selection along a non-lat/lon dimension
+- Vectorized classification while **keeping the DataArray/coordinate structure intact**: `xr.full_like(da, value, dtype=...)` to pre-allocate, then mutate the underlying `.values` (plain numpy) in place with boolean masks, since xarray doesn't support 2D boolean assignment/indexing directly on the DataArray itself
+- `xr.where(cond, x, y)` as the DataArray-preserving equivalent of `np.where`
 
 ### Domain/conceptual content
 - Full Köppen-Geiger decision tree incl. rigorous aridity threshold (Peel, Finlayson & McMahon 2007 formula, using seasonal precipitation distribution) — not just the Day 1 simplified/placeholder version
-- Multispectral satellite imagery: bands vs. true colour, NDVI concept (red/nir), Sentinel-2 mission basics
-- Hansen Global Forest Change dataset (treecover2000)
+- Multispectral satellite imagery: bands vs. true colour, NDVI concept and formula (red/nir), Sentinel-2 mission basics
+- Hansen Global Forest Change dataset: both `treecover2000` (Part II) and `lossyear` (Part IV)
 - GBIF occurrence data structure and quirks (sparse/clustered records, geocoding errors, missing values)
 - IUCN Red List categories (LC/NT/VU/EN/CR/DD)
+- Rule-based land-cover classification (Water/Vegetation/Bare-Urban) from NDVI + brightness thresholds
+- Real limitations of quick change-detection: differing cloud-gap coverage between two dates inflating apparent change unless explicitly guarded against, and seasonal/phenological NDVI shifts (different month of year) being mistaken for genuine land-use change — surfaced via a concrete number (our classifier's ~18% "change" vs. Hansen's own ~1% loss estimate for the same window)
 
 ### workshop_utils / data
 - `land_sea_mask_0p1.nc` — a second land-sea mask (0.1°, matches the Beck climate grid), distinct from Day 1's ERA5-resolution `land_sea_mask.nc`
+- `land-sea-mask_0p00833333.nc` — a third land-sea mask (~1km, matches the Beck KG classification grid), derived from the KG file's `0` ocean/no-data sentinel
 - Data lives partly under `PROCESSED_DIR / "day_2"` (GBIF CSVs, Sentinel-2, Hansen forest change) vs. directly under `PROCESSED_DIR` (climate/KG files, reused from Day 1)
 
 ## Day 3 — `notebooks/day3.ipynb`
