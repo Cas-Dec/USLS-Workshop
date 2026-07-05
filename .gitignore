@@ -24,4 +24,4 @@ results/
 .idea/
 
 # Solved exercises
-*solutions.ipynb
+#*solutions.ipynb
