@@ -6,7 +6,8 @@
       "Bash(\"/c/Users/decas/.conda/envs/usls/python.exe\" -m pip list)",
       "Bash(\"/c/Users/decas/.conda/envs/usls/python.exe\" -m jupyter nbconvert --to notebook --execute --inplace \"behind-the-scenes/day2_bts.ipynb\" --ExecutePreprocessor.timeout=600 --ExecutePreprocessor.kernel_name=python3)",
       "Bash(/c/Users/decas/.conda/envs/usls/python.exe *)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(jupyter nbconvert *)"
     ]
   }
 }
