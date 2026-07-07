@@ -4,9 +4,9 @@ from pathlib import Path
 
 def get_workshop_root():
     if Path("/content/drive").exists():
-        return Path("/content/drive/MyDrive/biology-workshop")
+        return Path("/content/drive/MyDrive/USLS-workshop")
     else:
-        return Path.cwd() / "biology-workshop"
+        return Path.cwd() / "USLS-workshop"
 
 WORKSHOP_ROOT = get_workshop_root()
 
