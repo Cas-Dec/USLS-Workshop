@@ -1,19 +1,33 @@
 # What to change in @notebooks/d2p3.ipynb
 
-START with a plot of Hansen forest loss over Negros. There seems to be a lot of forest loss on Guimaras island, let's zoom in there. What the students see: land use change.
+I'd create the following subsections:
 
-THEN visualize Landsat (1988-2000) - Sentinel 2 (2022-2024) composites over the same area, with maximum resolution (did we keep Sentinel 2 at native res or did we regrid it already? For this visual, zooming in, it would be best to have resolution as high as possible)
+## Where has forest been lost?
 
-NARRATIVE: we observe land use change, but it's hard to delineate by eye from the satellite imagery. But how can we actually track that over large areas at once? That's the motivation for land use classification.
+Looking good. Starting with a full negros image from the Hansen forest loss, then computing how much loss there has been between 2001-2023. Keep as is.
 
-BUT there's a problem in our data: the landsat composite has NaNs practically over all of the ocean. Why is that, did something go wrong in data processing? Check @behind-the-scenes/day2_bts.ipynb . Can't we get a better quality landsat composite? Either way, if it works well over land that's fine, then we just have to make sure we use the land sea mask throughout the notebook to work only over land.
+## Zooming in: Guimaras.
 
-BEFORE we move over to NDVI, quick 1x4 subplot of Hansen forest cover - Sentinel 2 visual r - Sentinel 2 visual g - Sentinel 2 visual b. Ask students what they notice in the different bands. Is one band better for detecting forest cover than another?
+Here, I would first again start with Hansen forest cover & loss, identical plot to above, but cropped to GUIMARAS_BBOX = dict(longitude=slice(122.46, 122.75), latitude=slice(10.76, 10.40)).
 
-THEN move over to NDVI. That section is nice, also the section moving over to land cover classes.
+Then, the cell that's already there, computing the 3.1% loss fraction as compared to Negros' overall 1.5% - good.
 
-Calibrating brightness across sensors using the ocean is a bad idea as the Landsat composite has mostly NaNs over oceans across its visual bands.
+In the satellite imagery, instead of the whole of Guimaras, we can do a 1x3 subplot. Left: full-Guimaras Hansen forest loss plot with bbox indicating where we'll zoom. Then, from guimaras_zoom_imagery.nc, middle Landsat 5 and right Sentinel-2 RGB: can the students spot forest loss from satellite true color imagery by eye?
 
-The land use change starting with forest cover loss is something I would do at the start of this notebook, see above. The binary forest loss plot is very ugly. It doesn't need a colormap.
+## NDVI: from satellite bands to vegetation mapping
 
-These are enough changes to implement for now.
+Start with 2x3 subplot, Negros-level: Hansen forest cover, visual_r, visual_g, visual_b, red, nir, the latter 5 all from negros_imagery.nc, of course. Ask the students: which band reflects best the forest cover pattern from Hansen? Can we identify forest from one band only?
+
+NDVI composite for Negros, looks good the way it is implemented. I also like the 1x4 subplot comparing the Hansen forest cover and then different NDVI threshold maps: clearly shows how strongly NDVI is linked to vegetation.
+
+## From NDVI to land-cover mapping
+
+Here, I'd first go again to the very high resolution guimaras_zoom_imagery.nc, just for the sentinel-2, do land cover mapping. Compare land cover maps to Sentinel-2 image. Ask students: does it look good?
+
+Landsat versus Sentinel land cover classes: for the guimaras_zoom_imagery.nc, apply the land cover classification and compare between the two satellite products.
+
+## Land Use Change
+
+Here, we look at guimaras_imagery.nc, which has 30m red/nir bands for the whole island. Start by calibrating the brightness / whatever differences between Landsat 5 and Sentinel-2. Then, do the land cover mapping, compare forest loss for NDVI threshold of 0.7 for forest with the Hansen forest loss.
+
+Culminate with land use change map for the entire Negros using the 200m resolution negros_imagery.nc.

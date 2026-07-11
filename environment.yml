@@ -23,6 +23,7 @@ dependencies:
   - scikit-learn
   - pystac-client
   - nbstripout
+  - tqdm
   - pip:
     - pyprojroot
     - planetary-computer

@@ -21,6 +21,7 @@ import rasterio
 import rioxarray
 import pystac_client
 import planetary_computer
+from tqdm.auto import tqdm
 from rasterio.enums import Resampling
 from rasterio.io import MemoryFile
 from rasterio.merge import merge as rio_merge
@@ -532,12 +533,20 @@ def _read_band_on_grid(href, resampling, bbox, grid_shape, grid_transform, grid_
 
 
 def _composite_period(items, band_assets, qc_asset, is_clear_fn, bbox, grid_shape, grid_transform,
-                       grid_crs, target_res_m, scale=1.0, offset=0.0, label=""):
-    """Per-pixel cloud/shadow-masked temporal median composite across all pooled scenes."""
+                       grid_crs, target_res_m, scale=1.0, offset=0.0, label="", resign=False):
+    """Per-pixel cloud/shadow-masked temporal median composite across all pooled scenes.
+
+    `resign`: Planetary Computer item hrefs are signed with a short-lived SAS token at search
+    time. If the composite is slow (many scenes, serial network reads), tokens signed early in
+    the run can expire before their item is reached, causing a 403 on `rasterio.open`. Passing
+    resign=True re-signs each item immediately before it's read, so the token is always fresh.
+    """
     n = len(items)
     grid_height, grid_width = grid_shape
     stacks = {b: np.full((n, grid_height, grid_width), np.nan, dtype="float32") for b in band_assets}
-    for i, it in enumerate(items):
+    for i, it in enumerate(tqdm(items, desc=label)):
+        if resign:
+            it = planetary_computer.sign(it)
         qc = _read_band_on_grid(it.assets[qc_asset].href, Resampling.nearest, bbox, grid_shape,
                                  grid_transform, grid_crs, target_res_m)
         if qc is None:
@@ -582,7 +591,10 @@ def search_seasonal_scenes(bbox, s2_years: range, l5_years: range,
 def build_landsat_sentinel_composite(bbox, s2_items, l5_items, target_res_m=100) -> dict:
     """Builds cloud/shadow-masked temporal-median composites for both sensors on one shared
     lat/lon grid at `target_res_m`. Returns {"s2": {...}, "l5": {...}, "grid": {...}} where each
-    sensor entry has red/green/blue/nir 2-D arrays and "grid" has the LAT/LON coordinate arrays."""
+    sensor entry has red/green/blue/nir 2-D arrays and "grid" has the LAT/LON coordinate arrays.
+    Pass an empty list for `s2_items` or `l5_items` to skip (re)building that sensor's composite
+    -- e.g. to redo just Landsat after fixing a bug, without repeating an already-good S2 run;
+    the skipped entry comes back as None."""
     deg_per_m = 1 / 111_320
     grid_res = target_res_m * deg_per_m
     grid_width = int(round((bbox[2] - bbox[0]) / grid_res))
@@ -598,14 +610,22 @@ def build_landsat_sentinel_composite(bbox, s2_items, l5_items, target_res_m=100)
     # Sentinel-2 L2A: SCL classes 4/5/6 = vegetation / bare soil / water
     s2_bands = {"red": "red", "green": "green", "blue": "blue", "nir": "nir"}
     s2_clear = lambda scl: np.isin(scl, [4, 5, 6])
-    s2_composite = _composite_period(s2_items, s2_bands, "scl", s2_clear, scale=1 / 10000,
-                                      label="S2", **common_kwargs)
+    s2_composite = None
+    if s2_items:
+        s2_composite = _composite_period(s2_items, s2_bands, "scl", s2_clear, scale=1 / 10000,
+                                          label="S2", **common_kwargs)
 
-    # Landsat 5 TM: QA_PIXEL bit 6 = "clear"
+    # Landsat 5 TM: QA_PIXEL bit 6 = "clear", bit 7 = "water". Fmask-derived cloud/cirrus bits
+    # (folded into "clear") false-positive heavily over open water (sunglint, whitecaps, low SNR
+    # on the older TM sensor), so without also whitelisting "water" here, ocean gets masked out
+    # almost everywhere even on cloud-free days -- unlike the Sentinel-2 path above, which already
+    # whitelists SCL class 6 ("water") explicitly.
     l5_bands = {"red": "red", "green": "green", "blue": "blue", "nir": "nir08"}
-    l5_clear = lambda qa: ((qa.astype(np.uint16) >> 6) & 1).astype(bool)
-    l5_composite = _composite_period(l5_items, l5_bands, "qa_pixel", l5_clear, scale=0.0000275,
-                                      offset=-0.2, label="L5", **common_kwargs)
+    l5_clear = lambda qa: (((qa.astype(np.uint16) >> 6) & 1) | ((qa.astype(np.uint16) >> 7) & 1)).astype(bool)
+    l5_composite = None
+    if l5_items:
+        l5_composite = _composite_period(l5_items, l5_bands, "qa_pixel", l5_clear, scale=0.0000275,
+                                          offset=-0.2, label="L5", resign=True, **common_kwargs)
 
     return {"s2": s2_composite, "l5": l5_composite, "grid": {"lat": lat, "lon": lon}}
 
